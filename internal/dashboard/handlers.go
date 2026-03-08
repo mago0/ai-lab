@@ -16,10 +16,16 @@ type pageData struct {
 	Content any
 }
 
-func (s *Server) render(w http.ResponseWriter, name string, data pageData) {
+func (s *Server) render(w http.ResponseWriter, page string, data pageData) {
+	tmpl, ok := s.templates[page]
+	if !ok {
+		log.Printf("template not found: %s", page)
+		http.Error(w, "template not found", http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := s.templates.ExecuteTemplate(w, name, data); err != nil {
-		log.Printf("template error: %v", err)
+	if err := tmpl.ExecuteTemplate(w, "layout.html", data); err != nil {
+		log.Printf("template error (%s): %v", page, err)
 		http.Error(w, "template error", http.StatusInternalServerError)
 	}
 }
@@ -56,7 +62,7 @@ func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	s.render(w, "layout.html", pageData{Title: "Dashboard", Content: st})
+	s.render(w, "home.html", pageData{Title: "Dashboard", Content: st})
 }
 
 type messageRow struct {
@@ -85,7 +91,7 @@ func (s *Server) handleMessages(w http.ResponseWriter, r *http.Request) {
 		messages = append(messages, m)
 	}
 
-	s.render(w, "layout.html", pageData{Title: "Messages", Content: messages})
+	s.render(w, "messages.html", pageData{Title: "Messages", Content: messages})
 }
 
 type cronListRow struct {
@@ -116,7 +122,7 @@ func (s *Server) handleCrons(w http.ResponseWriter, r *http.Request) {
 		jobs = append(jobs, j)
 	}
 
-	s.render(w, "layout.html", pageData{Title: "Cron Jobs", Content: jobs})
+	s.render(w, "crons.html", pageData{Title: "Cron Jobs", Content: jobs})
 }
 
 type cronJobDetail struct {
@@ -185,11 +191,11 @@ func (s *Server) handleCronDetail(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	s.render(w, "layout.html", pageData{Title: d.Job.Name, Content: d})
+	s.render(w, "cron_detail.html", pageData{Title: d.Job.Name, Content: d})
 }
 
 func (s *Server) handleCronForm(w http.ResponseWriter, r *http.Request) {
-	s.render(w, "layout.html", pageData{Title: "New Cron Job"})
+	s.render(w, "cron_form.html", pageData{Title: "New Cron Job"})
 }
 
 func (s *Server) handleCronCreate(w http.ResponseWriter, r *http.Request) {
@@ -245,7 +251,7 @@ func (s *Server) handleSoul(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		content = []byte("(SOUL.md not found)")
 	}
-	s.render(w, "layout.html", pageData{Title: "SOUL.md", Content: string(content)})
+	s.render(w, "soul.html", pageData{Title: "SOUL.md", Content: string(content)})
 }
 
 func (s *Server) handleSoulSave(w http.ResponseWriter, r *http.Request) {
