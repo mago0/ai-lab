@@ -9,6 +9,12 @@
       {{if .Content.Job.Enabled}}disable{{else}}enable{{end}}
     </button>
   </form>
+  <a href="/crons/{{.Content.Job.ID}}/edit" class="btn">edit</a>
+  <button class="btn" style="color: var(--accent-red);"
+      hx-delete="/crons/{{.Content.Job.ID}}"
+      hx-confirm="Delete this job and all its run history?">
+    delete
+  </button>
 </div>
 
 <div class="stats-grid">

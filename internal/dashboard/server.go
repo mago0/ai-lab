@@ -53,7 +53,7 @@ func parseTemplates(fsys fs.FS) (map[string]*template.Template, error) {
 		return nil, fmt.Errorf("read layout: %w", err)
 	}
 
-	pages := []string{"home.html", "messages.html", "crons.html", "cron_detail.html", "cron_form.html", "soul.html"}
+	pages := []string{"home.html", "messages.html", "crons.html", "cron_detail.html", "cron_form.html", "cron_edit.html", "soul.html"}
 	templates := make(map[string]*template.Template, len(pages))
 
 	for _, page := range pages {

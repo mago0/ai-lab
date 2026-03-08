@@ -220,6 +220,66 @@ func (s *Server) handleCronCreate(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/crons", http.StatusSeeOther)
 }
 
+func (s *Server) handleCronEditForm(w http.ResponseWriter, r *http.Request) {
+	jobID := chi.URLParam(r, "id")
+	var job cronJobDetail
+	var desc sql.NullString
+	err := s.db.QueryRow(
+		`SELECT id, name, description, schedule, enabled, prompt, model, working_dir,
+		 max_budget_usd, timeout_seconds, retry_max, on_failure
+		 FROM cron_jobs WHERE id = ?`, jobID,
+	).Scan(
+		&job.ID, &job.Name, &desc, &job.Schedule, &job.Enabled,
+		&job.Prompt, &job.Model, &job.WorkingDir,
+		&job.MaxBudget, &job.Timeout, &job.RetryMax, &job.OnFailure,
+	)
+	if err != nil {
+		http.Error(w, "job not found", http.StatusNotFound)
+		return
+	}
+	job.Description = desc.String
+	s.render(w, "cron_edit.html", pageData{Title: "Edit " + job.Name, Content: job})
+}
+
+func (s *Server) handleCronUpdate(w http.ResponseWriter, r *http.Request) {
+	jobID := chi.URLParam(r, "id")
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	_, err := s.db.Exec(
+		`UPDATE cron_jobs SET name=?, description=?, schedule=?, prompt=?, model=?,
+		 working_dir=?, max_budget_usd=?, timeout_seconds=?, updated_at=?
+		 WHERE id=?`,
+		r.FormValue("name"), r.FormValue("description"), r.FormValue("schedule"),
+		r.FormValue("prompt"), r.FormValue("model"), r.FormValue("working_dir"),
+		r.FormValue("max_budget_usd"), r.FormValue("timeout_seconds"),
+		time.Now().UTC(), jobID,
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	s.scheduler.LoadJobs()
+	http.Redirect(w, r, fmt.Sprintf("/crons/%s", jobID), http.StatusSeeOther)
+}
+
+func (s *Server) handleCronDelete(w http.ResponseWriter, r *http.Request) {
+	jobID := chi.URLParam(r, "id")
+	_, _ = s.db.Exec("DELETE FROM cron_runs WHERE job_id = ?", jobID)
+	_, err := s.db.Exec("DELETE FROM cron_jobs WHERE id = ?", jobID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	s.scheduler.LoadJobs()
+	w.Header().Set("HX-Redirect", "/crons")
+	w.WriteHeader(http.StatusOK)
+}
+
 func (s *Server) handleCronToggle(w http.ResponseWriter, r *http.Request) {
 	jobID := chi.URLParam(r, "id")
 	_, err := s.db.Exec(

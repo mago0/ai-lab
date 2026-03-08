@@ -31,3 +31,9 @@ Go, SQLite (modernc.org/sqlite), discordgo, robfig/cron/v3, chi, HTMX + Tailwind
 - Must unset CLAUDECODE env var when spawning subprocesses
 - SOUL.md injected via --append-system-prompt-file for personality
 - Never use em dashes or en dashes - only hyphens
+
+## Secrets
+
+- Secrets stored at `~/.config/secrets/` (mode 700)
+- Individual secret files are mode 600
+- Current secrets: `github_token` (GitHub PAT for mago0)
