@@ -55,6 +55,7 @@ func NewSessionManager(cfg SessionConfig) *SessionManager {
 func (sm *SessionManager) Start() error {
 	args := []string{
 		"--verbose",
+		"--dangerously-skip-permissions",
 		"--input-format", "stream-json",
 		"--output-format", "stream-json",
 	}
