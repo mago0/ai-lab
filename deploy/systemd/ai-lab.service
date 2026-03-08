@@ -1,0 +1,15 @@
+[Unit]
+Description=ai-lab Personal AI Assistant
+After=network.target
+
+[Service]
+Type=simple
+User=mattw
+WorkingDirectory=/home/mattw/Projects/personal/ai-lab
+ExecStart=/home/mattw/Projects/personal/ai-lab/ai-lab
+Restart=always
+RestartSec=5
+Environment=HOME=/home/mattw
+
+[Install]
+WantedBy=multi-user.target
