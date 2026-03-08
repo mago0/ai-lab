@@ -1,0 +1,21 @@
+{{define "content"}}
+<div class="card">
+  <div class="card-header">
+    <span>Message History</span>
+    <span class="text-muted text-sm">Last 100 messages</span>
+  </div>
+  {{range .Content}}
+  <div class="message">
+    <div class="message-header">
+      <span class="message-role {{.Role}}">{{.Role}}</span>
+      {{if .Model}}<span class="badge badge-muted">{{.Model}}</span>{{end}}
+      <span class="message-time">{{.CreatedAt}}</span>
+    </div>
+    <div class="message-content">{{.Content}}</div>
+  </div>
+  {{end}}
+  {{if not .Content}}
+  <div class="card-body text-muted">No messages yet.</div>
+  {{end}}
+</div>
+{{end}}

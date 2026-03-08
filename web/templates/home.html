@@ -1,0 +1,37 @@
+{{define "content"}}
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Messages</div>
+    <div class="stat-value cyan">{{.Content.TotalMessages}}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Cron Jobs</div>
+    <div class="stat-value amber">{{.Content.TotalCronJobs}}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Cron Runs</div>
+    <div class="stat-value green">{{.Content.TotalCronRuns}}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span>Live Activity</span>
+    <span class="badge badge-info">SSE</span>
+  </div>
+  <div id="activity-feed" hx-ext="sse" sse-connect="/activity/stream" sse-swap="message" hx-swap="afterbegin">
+    {{range .Content.RecentActivity}}
+    <div class="feed-item">
+      <span class="feed-time">{{.CreatedAt}}</span>
+      <span class="feed-source {{.Source}}">{{.Source}}</span>
+      <span class="feed-text">{{.Summary}}</span>
+    </div>
+    {{end}}
+    {{if not .Content.RecentActivity}}
+    <div class="feed-item">
+      <span class="feed-text text-muted">No activity yet. Send a Discord message or create a cron job.</span>
+    </div>
+    {{end}}
+  </div>
+</div>
+{{end}}

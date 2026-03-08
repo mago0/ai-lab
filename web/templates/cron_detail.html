@@ -1,0 +1,82 @@
+{{define "content"}}
+<div class="flex gap-2 mb-4">
+  <a href="/crons" class="btn">&lt; back</a>
+  <form method="POST" action="/crons/{{.Content.Job.ID}}/run" style="display:inline;" hx-post="/crons/{{.Content.Job.ID}}/run" hx-swap="none">
+    <button type="submit" class="btn btn-primary">run now</button>
+  </form>
+  <form method="POST" action="/crons/{{.Content.Job.ID}}/toggle" style="display:inline;">
+    <button type="submit" class="btn">
+      {{if .Content.Job.Enabled}}disable{{else}}enable{{end}}
+    </button>
+  </form>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Schedule</div>
+    <div style="font-size: 14px; color: var(--text-primary);">{{.Content.Job.Schedule}}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Model</div>
+    <div style="font-size: 14px; color: var(--accent-violet);">{{.Content.Job.Model}}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Budget</div>
+    <div style="font-size: 14px; color: var(--accent-amber);">${{printf "%.2f" .Content.Job.MaxBudget}}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Status</div>
+    <div>
+      {{if .Content.Job.Enabled}}<span class="badge badge-success">enabled</span>
+      {{else}}<span class="badge badge-muted">disabled</span>{{end}}
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header">Prompt</div>
+  <div class="card-body">
+    <pre style="white-space: pre-wrap; font-size: 12px; line-height: 1.6; color: var(--text-secondary);">{{.Content.Job.Prompt}}</pre>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span>Execution History</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Run ID</th>
+        <th>Status</th>
+        <th>Attempt</th>
+        <th>Exit</th>
+        <th>Cost</th>
+        <th>Duration</th>
+        <th>Started</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Content.Runs}}
+      <tr>
+        <td style="font-size: 10px;">{{.ID}}</td>
+        <td>
+          {{if eq .Status "success"}}<span class="badge badge-success">{{.Status}}</span>
+          {{else if eq .Status "failed"}}<span class="badge badge-error">{{.Status}}</span>
+          {{else if eq .Status "running"}}<span class="badge badge-info">{{.Status}}</span>
+          {{else}}<span class="badge badge-muted">{{.Status}}</span>{{end}}
+        </td>
+        <td>{{.Attempt}}</td>
+        <td>{{.ExitCode}}</td>
+        <td>${{printf "%.4f" .CostUSD}}</td>
+        <td>{{.DurationMS}}ms</td>
+        <td class="text-muted text-sm">{{.StartedAt}}</td>
+      </tr>
+      {{end}}
+      {{if not .Content.Runs}}
+      <tr><td colspan="7" class="text-muted">No runs yet.</td></tr>
+      {{end}}
+    </tbody>
+  </table>
+</div>
+{{end}}

@@ -1,0 +1,60 @@
+{{define "content"}}
+<div class="flex gap-2 mb-4">
+  <a href="/crons" class="btn">&lt; back</a>
+</div>
+
+<div class="card">
+  <div class="card-header">Create Cron Job</div>
+  <div class="card-body">
+    <form method="POST" action="/crons">
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" name="name" class="form-input" required placeholder="daily-health-check">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input type="text" name="description" class="form-input" placeholder="Check system health and report">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Schedule (cron with seconds)</label>
+        <input type="text" name="schedule" class="form-input" required placeholder="0 0 9 * * *" value="0 0 9 * * *">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Prompt</label>
+        <textarea name="prompt" class="form-textarea" required placeholder="What should Claude do?"></textarea>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+        <div class="form-group">
+          <label class="form-label">Model</label>
+          <select name="model" class="form-select">
+            <option value="sonnet">sonnet</option>
+            <option value="opus">opus</option>
+            <option value="haiku">haiku</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Max Budget (USD)</label>
+          <input type="number" name="max_budget_usd" class="form-input" value="1.00" step="0.10" min="0.10">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Timeout (seconds)</label>
+          <input type="number" name="timeout_seconds" class="form-input" value="600" min="30">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Working Directory</label>
+        <input type="text" name="working_dir" class="form-input" required placeholder="/home/mattw/Projects/personal/ai-lab">
+      </div>
+
+      <button type="submit" class="btn btn-primary">create job</button>
+    </form>
+  </div>
+</div>
+{{end}}

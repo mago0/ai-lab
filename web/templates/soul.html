@@ -1,0 +1,16 @@
+{{define "content"}}
+<div class="card">
+  <div class="card-header">
+    <span>SOUL.md - Personality & Preferences</span>
+    <span class="text-muted text-sm">Injected into every Claude session</span>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="/soul">
+      <div class="form-group">
+        <textarea name="content" class="form-textarea" style="min-height: 400px; font-size: 13px; line-height: 1.7;">{{.Content}}</textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">save changes</button>
+    </form>
+  </div>
+</div>
+{{end}}

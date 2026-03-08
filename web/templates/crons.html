@@ -1,0 +1,54 @@
+{{define "content"}}
+<div class="flex justify-between items-center mb-4">
+  <span></span>
+  <a href="/crons/new" class="btn btn-primary">+ new job</a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span>Scheduled Jobs</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Schedule</th>
+        <th>Model</th>
+        <th>Status</th>
+        <th>Last Run</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Content}}
+      <tr>
+        <td><a href="/crons/{{.ID}}" style="color: var(--accent-cyan); text-decoration: none;">{{.Name}}</a></td>
+        <td style="font-size: 11px;">{{.Schedule}}</td>
+        <td><span class="badge badge-muted">{{.Model}}</span></td>
+        <td>
+          {{if .Enabled}}
+          <span class="badge badge-success">enabled</span>
+          {{else}}
+          <span class="badge badge-muted">disabled</span>
+          {{end}}
+        </td>
+        <td class="text-muted text-sm">{{if .LastRun}}{{.LastRun}}{{else}}-{{end}}</td>
+        <td>
+          <form method="POST" action="/crons/{{.ID}}/toggle" style="display:inline;">
+            <button type="submit" class="btn" style="padding: 3px 8px; font-size: 10px;">
+              {{if .Enabled}}disable{{else}}enable{{end}}
+            </button>
+          </form>
+          <form method="POST" action="/crons/{{.ID}}/run" style="display:inline;" hx-post="/crons/{{.ID}}/run" hx-swap="none">
+            <button type="submit" class="btn btn-primary" style="padding: 3px 8px; font-size: 10px;">run now</button>
+          </form>
+        </td>
+      </tr>
+      {{end}}
+      {{if not .Content}}
+      <tr><td colspan="6" class="text-muted">No cron jobs configured.</td></tr>
+      {{end}}
+    </tbody>
+  </table>
+</div>
+{{end}}
