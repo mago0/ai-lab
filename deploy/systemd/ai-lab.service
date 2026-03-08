@@ -1,15 +1,19 @@
+# Template - deploy/setup.sh generates the actual service file.
+# Placeholders: __USER__, __HOME__, __WORKDIR__
+
 [Unit]
 Description=ai-lab Personal AI Assistant
 After=network.target
 
 [Service]
 Type=simple
-User=mattw
-WorkingDirectory=/home/mattw/Projects/personal/ai-lab
-ExecStart=/home/mattw/Projects/personal/ai-lab/ai-lab
+User=__USER__
+WorkingDirectory=__WORKDIR__
+ExecStart=__WORKDIR__/ai-lab
 Restart=always
 RestartSec=5
-Environment=HOME=/home/mattw
+Environment=HOME=__HOME__
+Environment=PATH=/usr/local/go/bin:/usr/local/bin:/usr/bin:/bin
 
 [Install]
 WantedBy=multi-user.target

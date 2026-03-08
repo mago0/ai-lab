@@ -9,6 +9,8 @@ command -v claude >/dev/null 2>&1 || { echo "ERROR: claude not found. Install Cl
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+CURRENT_USER="$(whoami)"
+CURRENT_HOME="$HOME"
 
 cd "$PROJECT_DIR"
 
@@ -27,25 +29,20 @@ echo "Building..."
 go build -o ai-lab .
 echo "Build complete."
 
-# Run migrations (happens on startup, but test it)
-echo "Testing database..."
-./ai-lab &
-AI_PID=$!
-sleep 2
-kill $AI_PID 2>/dev/null || true
-wait $AI_PID 2>/dev/null || true
-echo "Database OK."
+# Generate and install systemd service
+echo "Installing systemd service..."
+sed -e "s|__USER__|${CURRENT_USER}|g" \
+    -e "s|__HOME__|${CURRENT_HOME}|g" \
+    -e "s|__WORKDIR__|${PROJECT_DIR}|g" \
+    deploy/systemd/ai-lab.service | sudo tee /etc/systemd/system/ai-lab.service > /dev/null
 
-# Install systemd service
+sudo systemctl daemon-reload
+sudo systemctl enable ai-lab
+echo "Systemd service installed and enabled."
+
 echo ""
-echo "To install as a systemd service:"
-echo "  sudo cp deploy/systemd/ai-lab.service /etc/systemd/system/"
-echo "  sudo systemctl daemon-reload"
-echo "  sudo systemctl enable ai-lab"
-echo "  sudo systemctl start ai-lab"
-echo ""
-echo "To check status:"
-echo "  sudo systemctl status ai-lab"
-echo "  journalctl -u ai-lab -f"
+echo "To start:  sudo systemctl start ai-lab"
+echo "To check:  sudo systemctl status ai-lab"
+echo "Logs:      journalctl -u ai-lab -f"
 echo ""
 echo "Setup complete. Edit .env and start the service."
