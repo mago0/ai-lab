@@ -54,6 +54,7 @@ func NewSessionManager(cfg SessionConfig) *SessionManager {
 // Start spawns the claude subprocess and begins reading events.
 func (sm *SessionManager) Start() error {
 	args := []string{
+		"--verbose",
 		"--input-format", "stream-json",
 		"--output-format", "stream-json",
 	}
