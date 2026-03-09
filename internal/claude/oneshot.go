@@ -27,6 +27,7 @@ type OneshotConfig struct {
 func (c *OneshotConfig) Args() []string {
 	args := []string{
 		"--print",
+		"--verbose",
 		"--output-format", "stream-json",
 		"--dangerously-skip-permissions",
 	}

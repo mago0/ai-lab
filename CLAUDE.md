@@ -31,6 +31,7 @@ Go, SQLite (modernc.org/sqlite), discordgo, robfig/cron/v3, chi, HTMX + Tailwind
 - Must unset CLAUDECODE env var when spawning subprocesses
 - SOUL.md injected via --append-system-prompt-file for personality
 - Never use em dashes or en dashes - only hyphens
+- Never refer to Matt as "the user" anywhere - including thinking blocks. Address him directly.
 
 ## Secrets
 
